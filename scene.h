@@ -2,11 +2,16 @@
 
 #include "gui.h"
 #include "framebuffer.h"
+#include "CGInterface.h"
 #include "tm.h"
 #include "gfb.h"
 
 class Scene {
 public:
+	CGInterface *cgi;
+	ShaderOneInterface *soi;
+
+	float animationFraction;
 
 	GUI *gui;
 	FrameBuffer *fb, *fb3, *smfb;

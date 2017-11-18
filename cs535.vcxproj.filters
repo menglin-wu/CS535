@@ -45,6 +45,9 @@
     <ClInclude Include="gfb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CGInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene.cpp">
@@ -74,10 +77,18 @@
     <ClCompile Include="gfb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CGInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui.fl">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CG\shaderOne.cg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
