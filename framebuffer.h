@@ -9,6 +9,7 @@
 
 class FrameBuffer : public Fl_Gl_Window {
 public:
+	int isHW;
 	unsigned int id;
 	unsigned int *pix;
 	float *zb;

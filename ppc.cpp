@@ -159,4 +159,29 @@ void PPC::LoadFromTextFile(char *fname) {
 
 }
 
+void PPC::SetIntrinsicsHW(float zNear, float zFar) {
+
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float left, right, bottom, top;
+	float scf = zNear / GetF();
+	left = -a.Length()*(float)w / 2.0f * scf;
+	right = +a.Length()*(float)w / 2.0f * scf;
+	bottom = -b.Length()*(float)h / 2.0f*scf;
+	top = +b.Length()*(float)h / 2.0f*scf;
+	glFrustum(left, right, bottom, top, zNear, zFar);
+
+	glMatrixMode(GL_MODELVIEW);
+
+}
+
+void PPC::SetExtrinsicsHW() {
+
+	V3 LAP = C + GetVD()*100.0f;
+	glLoadIdentity();
+	gluLookAt(C[0], C[1], C[2], LAP[0], LAP[1], LAP[2], -b[0], -b[1], -b[2]);
+
+}
 

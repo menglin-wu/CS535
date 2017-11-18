@@ -2,19 +2,19 @@
 
 #include "gui.h"
 #include "framebuffer.h"
-#include "CGInterface.h"
 #include "tm.h"
 #include "gfb.h"
+#include "CGInterface.h"
+
 
 class Scene {
 public:
+
 	CGInterface *cgi;
 	ShaderOneInterface *soi;
 
-	float animationFraction;
-
 	GUI *gui;
-	FrameBuffer *fb, *fb3, *smfb;
+	FrameBuffer *fb, *fb3, *smfb, *hwfb, *gpufb;
 	GFB *gfb;
 	V3 L;
 	float specc;
@@ -28,6 +28,8 @@ public:
 	void Render(FrameBuffer *fb, PPC *ppc);
 	void RenderAll();
 	void ShadowMapSetup();
+	void RenderHW();
+	void RenderGPU();
 };
 
 extern Scene *scene;

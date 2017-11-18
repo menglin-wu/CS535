@@ -33,4 +33,5 @@ public:
 	M33 ComputeMSIM(M33 vs, PPC *ppc);
 	void VisualizeNormals(PPC *ppc, FrameBuffer *fb, float len);
 	AABB ComputeAABB();
+	void RenderHW();
 };

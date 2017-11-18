@@ -293,7 +293,7 @@ void TM::RenderFilled(PPC *ppc, FrameBuffer *fb) {
 					fb->SetZB(currPix, ccSSv.GetColor());
 					continue;
 				}
-				if (id == 1) {
+				if (id == -1) {
 					V3 materialColor(1.0f, 0.0f, 0.0f);
 					float ka = 0.3f;
 					V3 L(0.0f, 0.0f, 0.0f);
@@ -527,5 +527,19 @@ void TM::RenderGFB(PPC *ppc, GFB *gfb) {
 
 
 	delete[] projV;
+
+}
+
+
+void TM::RenderHW() {
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, (float*)verts);
+	glColorPointer(3, GL_FLOAT, 0, (float*)cols);
+	glDrawElements(GL_TRIANGLES, 3 * trisN, GL_UNSIGNED_INT, tris);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 }

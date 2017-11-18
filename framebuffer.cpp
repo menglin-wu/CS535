@@ -10,6 +10,7 @@ using namespace std;
 FrameBuffer::FrameBuffer(int u0, int v0,
 	int _w, int _h, unsigned int _id) : Fl_Gl_Window(u0, v0, _w, _h, 0) {
 
+	isHW = 0;
 	id = _id;
 	w = _w;
 	h = _h;
@@ -21,7 +22,12 @@ FrameBuffer::FrameBuffer(int u0, int v0,
 
 void FrameBuffer::draw() {
 
-	glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pix);
+	if (!isHW)
+		glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pix);
+	else if (isHW == 1) // fixed pipeline
+		scene->RenderHW();
+	else
+		scene->RenderGPU(); // programmable pipeline
 }
 
 int FrameBuffer::handle(int event) {

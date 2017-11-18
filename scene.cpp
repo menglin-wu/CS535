@@ -25,14 +25,24 @@ Scene::Scene() {
 
 	fb = new FrameBuffer(u0, v0, w, h, 0);
 	fb->label("First person");
-	fb->show();
+//	fb->show();
+
+	hwfb = new FrameBuffer(u0 /*+ w + 20*/, v0, w, h, 0);
+	hwfb->isHW = 1;
+	hwfb->label("Fixed Pipeline First person");
+	hwfb->show();
+
+	gpufb = new FrameBuffer(u0 + w + 20, v0, w, h, 0);
+	gpufb->isHW = 2;
+	gpufb->label("GPU First person");
+	gpufb->show();
 
 	fb3 = new FrameBuffer(u0, v0, w, h, 1);
 	fb3->label("Third person");
 	fb3->position(u0 + fb->w + 20, v0);
-	fb3->show();
+	//fb3->show();
 
-	gui->uiw->position(u0, v0 + fb->h + 20);
+	gui->uiw->position(u0, v0 + fb->h + 60);
 
 	float hfov = 55.0f;
 	ppc = new PPC(fb->w, fb->h, hfov);
@@ -76,6 +86,7 @@ Scene::Scene() {
 	tms[5].SetToBox(bC, V3(200.0f, 1.0f, 200.0f), V3(1.0f, 1.0f, 1.0f));
 	tms[5].id = 5;
 	L = L + V3(30.0f, 80.0f, -20.0f);
+	tms[5].enabled = 0;
 
 	smppc = 0;
 	smfb = 0;
@@ -131,6 +142,18 @@ void Scene::ShadowMapSetup() {
 
 
 void Scene::DBG() {
+
+	{
+		PPC ppc1(*ppc);
+		ppc1.LoadFromTextFile("view.txt");
+		PPC ppc0(*ppc);
+		for (int fi = 0; fi < 100; fi++) {
+			ppc->SetInterpolated(&ppc0, &ppc1, (float)fi / 99.0f);
+			RenderAll();
+			Fl::check();
+		}
+		return;
+	}
 
 	{
 		ppc->LoadFromTextFile("view.txt");
@@ -388,6 +411,71 @@ void Scene::NewButton() {
 void Scene::RenderAll() {
 
 	Render(fb, ppc);
-//	Render(fb3, ppc3);
+	if (hwfb)
+		hwfb->redraw();
+	if (gpufb)
+		gpufb->redraw();
+	//	Render(fb3, ppc3);
 
+}
+
+
+void Scene::RenderHW() {
+
+	// clear the framebuffer
+	glClearColor(0.0, 0.0f, 0.5f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT |
+		GL_DEPTH_BUFFER_BIT);
+
+	// set view
+	// set intrinsics
+	ppc->SetIntrinsicsHW(1.0f, 1000.0f);
+	// set extrinsics
+	ppc->SetExtrinsicsHW();
+
+	// render geometry
+	for (int tmi = 0; tmi < tmsN; tmi++) {
+		if (!tms[tmi].enabled)
+			continue;
+		tms[tmi].RenderHW();
+	}
+
+}
+
+void Scene::RenderGPU() {
+
+	// if the first time, call per session initialization
+	if (cgi == NULL) {
+		cgi = new CGInterface();
+		cgi->PerSessionInit();
+		soi = new ShaderOneInterface();
+		soi->PerSessionInit(cgi);
+	}
+
+	// clear the framebuffer
+	glClearColor(0.0, 0.0f, 0.5f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT |
+		GL_DEPTH_BUFFER_BIT);
+
+	// set view
+	// set intrinsics
+	ppc->SetIntrinsicsHW(1.0f, 1000.0f);
+	// set extrinsics
+	ppc->SetExtrinsicsHW();
+
+	// per frame initialization
+	cgi->EnableProfiles();
+	soi->PerFrameInit();
+	soi->BindPrograms();
+
+	// render geometry
+	for (int tmi = 0; tmi < tmsN; tmi++) {
+		if (!tms[tmi].enabled)
+			continue;
+		tms[tmi].RenderHW();
+	}
+
+	cgi->DisableProfiles();
 }

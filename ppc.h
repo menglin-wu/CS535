@@ -24,4 +24,6 @@ public:
 	V3 Unproject(V3 pp);
 	void SaveToTextFile(char *fname);
 	void LoadFromTextFile(char *fname);
+	void SetIntrinsicsHW(float nearZ, float farZ);
+	void SetExtrinsicsHW();
 };
