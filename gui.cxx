@@ -8,6 +8,13 @@ void GUI::cb_DBG_i(Fl_Button*, void*) {
 void GUI::cb_DBG(Fl_Button* o, void* v) {
   ((GUI*)(o->parent()->user_data()))->cb_DBG_i(o,v);
 }
+
+void GUI::cb_NewButton_i(Fl_Return_Button*, void*) {
+  NewButton_cb();
+}
+void GUI::cb_NewButton(Fl_Return_Button* o, void* v) {
+  ((GUI*)(o->parent()->user_data()))->cb_NewButton_i(o,v);
+}
 #include "scene.h"
 
 GUI::GUI() {
@@ -17,6 +24,9 @@ GUI::GUI() {
       o->selection_color(FL_DARK_RED);
       o->callback((Fl_Callback*)cb_DBG);
     } // Fl_Button* o
+    { Fl_Return_Button* o = new Fl_Return_Button(30, 80, 110, 100, "NewButton");
+      o->callback((Fl_Callback*)cb_NewButton);
+    } // Fl_Return_Button* o
     uiw->end();
   } // Fl_Double_Window* uiw
 }
@@ -32,4 +42,8 @@ void GUI::show() {
 
 void GUI::DBG_cb() {
   scene->DBG();
+}
+
+void GUI::NewButton_cb() {
+  scene->NewButton();
 }

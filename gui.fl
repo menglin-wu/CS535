@@ -13,8 +13,13 @@ class GUI {open
     } {
       Fl_Button {} {
         label DBG
-        callback {DBG_cb()} selected
+        callback {DBG_cb()}
         xywh {15 15 95 40} selection_color 72
+      }
+      Fl_Return_Button {} {
+        label NewButton
+        callback {NewButton_cb()}
+        xywh {30 80 110 100}
       }
     }
   }
@@ -24,7 +29,13 @@ class GUI {open
   Function {show()} {} {
     code {uiw->show();} {}
   }
-  Function {DBG_cb()} {} {
+  Function {DBG_cb()} {open
+  } {
     code {scene->DBG();} {}
+  }
+  Function {NewButton_cb()} {open
+  } {
+    code {scene->NewButton();} {selected
+    }
   }
 } 

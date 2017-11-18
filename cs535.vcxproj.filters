@@ -27,6 +27,24 @@
     <ClInclude Include="scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="v3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="m33.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ppc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aabb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene.cpp">
@@ -36,6 +54,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="v3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="m33.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ppc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aabb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gfb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
