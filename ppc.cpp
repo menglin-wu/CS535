@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "ppc.h"
 #include "m33.h"
 #include "framebuffer.h"

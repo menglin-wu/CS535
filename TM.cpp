@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "tm.h"
 #include "aabb.h"
 #include "m33.h"
@@ -534,11 +536,18 @@ void TM::RenderGFB(PPC *ppc, GFB *gfb) {
 void TM::RenderHW() {
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
 	glVertexPointer(3, GL_FLOAT, 0, (float*)verts);
 	glColorPointer(3, GL_FLOAT, 0, (float*)cols);
+	glNormalPointer(GL_FLOAT, 0, (float*)normals);
+
 	glDrawElements(GL_TRIANGLES, 3 * trisN, GL_UNSIGNED_INT, tris);
+
+	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 

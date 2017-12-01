@@ -30,6 +30,8 @@ public:
 	void ShadowMapSetup();
 	void RenderHW();
 	void RenderGPU();
+
+	float morphFraction;
 };
 
 extern Scene *scene;

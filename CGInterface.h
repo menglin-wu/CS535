@@ -31,15 +31,10 @@ class ShaderOneInterface {
   CGprogram fragmentProgram;
   // uniform parameters, i.e parameters that have the same value for all geometry rendered
   CGparameter vertexModelViewProj; // a matrix combining projection and modelview matrices
-  CGparameter vertexSphereRadius, vertexSphereCenter, vertexAnimationFraction;
+  CGparameter vertexSphereRadius, vertexSphereCenter, vertexMorphFraction;
   CGparameter geometryModelViewProj; // geometry shader
-  CGparameter geometryAnimationFraction; 
-  CGparameter fragmentBlueHue;
-  CGparameter fragmentCenter;
-  CGparameter fragmentEye;
-  CGparameter fragmentAABBC0;
-  CGparameter fragmentAABBC1;
-
+  CGparameter fragmentEye; // output view center of projection
+  CGparameter fragmentLight; // position of light
 public:
   ShaderOneInterface() {};
   bool PerSessionInit(CGInterface *cgi); // per session initialization

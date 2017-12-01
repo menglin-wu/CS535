@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "scene.h"
 #include "v3.h"
 #include "m33.h"
@@ -10,6 +12,8 @@ using namespace std;
 #include <iostream>
 
 Scene::Scene() {
+
+	morphFraction = 0.0f;
 
 	gui = new GUI();
 	gui->show();
@@ -57,6 +61,8 @@ Scene::Scene() {
 	tms[0].enabled = 0;
 	tms[1].LoadBin("geometry/teapot1K.bin");
 	tms[1].enabled = 1;
+	AABB aabb = tms[1].ComputeAABB();
+	cerr << "INFO: teapot aabb: " << aabb.corners[0] << "; " << aabb.corners[1] << endl;
 	ppc->C = tms[1].GetCenterOfMass() + V3(0.0f, 0.0f, 110.0f);
 	L = ppc->C;
 
@@ -80,7 +86,7 @@ Scene::Scene() {
 	Render(fb, ppc);
 	Render(fb3, ppc3);
 
-	AABB aabb = tms[1].ComputeAABB();
+	aabb = tms[1].ComputeAABB();
 	V3 bC = tms[1].GetCenterOfMass();
 	bC[1] = aabb.corners[0][1];
 	tms[5].SetToBox(bC, V3(200.0f, 1.0f, 200.0f), V3(1.0f, 1.0f, 1.0f));
@@ -142,6 +148,31 @@ void Scene::ShadowMapSetup() {
 
 
 void Scene::DBG() {
+
+	{
+
+		for (int fi = 0; fi < 1000; fi++) {
+			morphFraction = (float)fi / 1299.0f;
+			RenderAll();
+			Fl::check();
+		}
+		return;
+
+
+	}
+
+	{
+		V3 L0 = tms[1].GetCenterOfMass() + V3(0.0f, 0.0f, 100.0f);
+		V3 L1 = tms[1].GetCenterOfMass() + V3(0.0f, 100.0f, 0.0f);
+		for (int fi = 0; fi < 100; fi++) {
+			L = L0 + (L1 - L0)*(float)fi / 99.0f;
+			cerr << L << "        \r";
+			RenderAll();
+			Fl::check();
+		}
+		return;
+
+	}
 
 	{
 		PPC ppc1(*ppc);
@@ -410,7 +441,7 @@ void Scene::NewButton() {
 
 void Scene::RenderAll() {
 
-	Render(fb, ppc);
+//	Render(fb, ppc);
 	if (hwfb)
 		hwfb->redraw();
 	if (gpufb)

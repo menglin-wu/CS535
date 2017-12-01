@@ -1,10 +1,11 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
-class GUI {open
+class GUI {open selected
 } {
-  decl {\#include "scene.h"} {}
+  decl {\#include "scene.h"} {private local
+  }
   Function {GUI()} {open
   } {
     Fl_Window uiw {
@@ -35,7 +36,6 @@ class GUI {open
   }
   Function {NewButton_cb()} {open
   } {
-    code {scene->NewButton();} {selected
-    }
+    code {scene->NewButton();} {}
   }
-} 
+}

@@ -1,9 +1,10 @@
+#include "stdafx.h"
+
 #include "framebuffer.h"
 #include "math.h"
 #include <iostream>
 #include "scene.h"
 #include "v3.h"
-#include <iostream>
 
 using namespace std;
 

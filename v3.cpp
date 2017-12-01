@@ -1,5 +1,6 @@
-#include "v3.h"
+#include "stdafx.h"
 
+#include "v3.h"
 #include "m33.h"
 
 V3::V3(float x, float y, float z) {

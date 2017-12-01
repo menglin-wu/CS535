@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 //#define GEOM_SHADER
 
 #include "CGInterface.h"
@@ -42,7 +44,12 @@ void CGInterface::PerSessionInit() {
   pixelCGprofile = latestPixelProfile;
   cgContext = cgCreateContext();  
 
+  GLenum glewError = glewInit();
+  if (glewError) {
+	  cerr << "GLEW ERROR: " << glewGetErrorString(glewError) << endl;
+  }
 
+  cout << "Info: Using GLEW " << glewGetString(GLEW_VERSION) << endl;
 }
 
 bool ShaderOneInterface::PerSessionInit(CGInterface *cgi) {
@@ -85,16 +92,12 @@ bool ShaderOneInterface::PerSessionInit(CGInterface *cgi) {
 
 	// build some parameters by name such that we can set them later...
   vertexModelViewProj = cgGetNamedParameter(vertexProgram, "modelViewProj" );
-  vertexSphereCenter = cgGetNamedParameter(vertexProgram, "sphereCenter");
   vertexSphereRadius = cgGetNamedParameter(vertexProgram, "sphereRadius");
-  vertexAnimationFraction = cgGetNamedParameter(vertexProgram, "animationFraction");
+  vertexSphereCenter = cgGetNamedParameter(vertexProgram, "sphereCenter");
+  vertexMorphFraction = cgGetNamedParameter(vertexProgram, "morphFraction");
   geometryModelViewProj = cgGetNamedParameter(geometryProgram, "modelViewProj" );
-  geometryAnimationFraction = cgGetNamedParameter(geometryProgram, "animationFraction");
-  fragmentBlueHue = cgGetNamedParameter(fragmentProgram, "blueHue" );
-  fragmentCenter = cgGetNamedParameter(fragmentProgram, "center" );
-  fragmentEye = cgGetNamedParameter(fragmentProgram, "eye" );
-  fragmentAABBC0 = cgGetNamedParameter(fragmentProgram, "C0" );
-  fragmentAABBC1 = cgGetNamedParameter(fragmentProgram, "C1" );
+  fragmentEye = cgGetNamedParameter(fragmentProgram, "eye");
+  fragmentLight = cgGetNamedParameter(fragmentProgram, "light");
 
   return true;
 
@@ -112,6 +115,24 @@ void ShaderOneInterface::PerFrameInit() {
     geometryModelViewProj, 
 		CG_GL_MODELVIEW_PROJECTION_MATRIX, 
     CG_GL_MATRIX_IDENTITY);
+
+
+  V3 sphereCenter = scene->tms[1].GetCenterOfMass();
+  cgGLSetParameter3fv(vertexSphereCenter, (float*)&sphereCenter);
+  AABB aabb = scene->tms[1].ComputeAABB();
+  float sphereRadius = (aabb.corners[1] - aabb.corners[0]).Length()/3.0f;
+  cgGLSetParameter1f(vertexSphereRadius, sphereRadius);
+  cgGLSetParameter1f(vertexMorphFraction, scene->morphFraction);
+
+
+  V3 eye = scene->ppc->C;
+//  eye = eye + V3(14.0f, 14.0f, 14.0f);
+//  eye = eye/150.0f;
+//  cerr << "eye:" << eye << endl;
+  cgGLSetParameter3fv(fragmentEye, (float*)&eye);
+  V3 light = scene->L;
+//  light = V3(0.0f, 100.0f, -100.0f);
+  cgGLSetParameter3fv(fragmentLight, (float*)&light);
 
 }
 

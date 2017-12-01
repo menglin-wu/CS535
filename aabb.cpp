@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "aabb.h"
 
 AABB::AABB(V3 firstPoint) {

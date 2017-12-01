@@ -1,136 +1,43 @@
 
 struct VertexDataInput {
 	float4 vertex: POSITION;
+	float3 normal: NORMAL;
 	float3 color: COLOR;
-	float3 normal: NORMAL0;
 };
 
 struct VertexDataOutput {
 	float4 projv  : POSITION;
+	float3 normal: TEXCOORD0;
+	float3 vxyz: TEXCOORD1;
 	float3 color : COLOR;
-	float3 xyz: TEXCOORD0;
-	float3 normal: TEXCOORD1;
 };
 
 struct PixelDataOutput {
-	float3 color : COLOR0;
+	float3 color : COLOR;
 };
 
 VertexDataOutput VertexMain(VertexDataInput vdi, 
-  uniform float4x4 modelViewProj, 
-  uniform float3 sphereCenter, uniform float sphereRadius,
-  uniform float animationFraction) {
+  uniform float4x4 modelViewProj, uniform float sphereRadius,
+  uniform float3 sphereCenter, uniform float morphFraction) {
 
   VertexDataOutput ret;
-
-  float3 vdir = normalize(vdi.vertex.xyz - sphereCenter);
-  float4 finalVertex = float4(sphereCenter + vdir * sphereRadius, 1.0f);
-  float4 newVertex = vdi.vertex + (finalVertex - vdi.vertex)*animationFraction;
-
-  ret.projv = mul(modelViewProj, newVertex);
-  ret.color = vdi.color;
-  ret.xyz = vdi.vertex.xyz;
+  float3 morphDirection = normalize(vdi.vertex.xyz-sphereCenter);
+  float3 finalPosition = sphereCenter + morphDirection*sphereRadius;
+  float4 morphedVertex;
+  morphedVertex.xyz = vdi.vertex.xyz + (finalPosition-vdi.vertex.xyz)*morphFraction;
+  morphedVertex.w = 1.0f;
+//  ret.projv = mul(modelViewProj, vdi.vertex);
+  ret.projv = mul(modelViewProj, morphedVertex);
   ret.normal = vdi.normal;
+  ret.vxyz = vdi.vertex.xyz;
+  ret.color = vdi.color;
   return ret;
 
 }
 
 TRIANGLE void GeometryMain(AttribArray<VertexDataOutput> tverts,
-	uniform float4x4 modelViewProj, uniform float animationFraction) {
-
-	emitVertex(tverts[0]);
-	emitVertex(tverts[1]);
-	emitVertex(tverts[2]);
-	return;
-
-}
-
-TRIANGLE void GeometryMainSpikes(AttribArray<VertexDataOutput> tverts,
-	uniform float4x4 modelViewProj, uniform float animationFraction) {
-
-	VertexDataOutput modVerts[4];
-	modVerts[0] = tverts[0];
-	modVerts[1] = tverts[1];
-	modVerts[2] = tverts[2];
-
-	float perimeter = 
-		length(tverts[1].xyz-tverts[0].xyz) +
-		length(tverts[2].xyz-tverts[1].xyz) +
-		length(tverts[0].xyz-tverts[2].xyz);
-
-	float3 normal = normalize(cross(tverts[1].xyz - tverts[0].xyz, 
-		tverts[2].xyz - tverts[0].xyz));
-
-	float3 center = (tverts[0].xyz+ tverts[1].xyz + tverts[2].xyz) / 3.0f;
-
-	modVerts[3].xyz = center + normal * perimeter * animationFraction;
-	modVerts[3].projv = mul(modelViewProj, float4(modVerts[3].xyz, 1.0f));
-	modVerts[3].color = float3(1.0f, 0.0f, 0.0f);
-	modVerts[3].normal = normal;
-
-	// emit 0, 1, 3
-	// emit 1, 2, 3
-	// emit 2, 0, 3
-	emitVertex(modVerts[0]);
-	emitVertex(modVerts[1]); // after the first two vertices are emitted, each additional emitted vertex creates a triangle
-	emitVertex(modVerts[3]);
-	emitVertex(modVerts[2]);
-	emitVertex(modVerts[0]);
-
-	return;
-
-}
-
-TRIANGLE void GeometryMainTriangleShrinking(AttribArray<VertexDataOutput> tverts,
-	uniform float4x4 modelViewProj, uniform float animationFraction) {
-
-	VertexDataOutput modVerts[3];
-	modVerts[0] = tverts[0];
-	modVerts[1] = tverts[1];
-	modVerts[2] = tverts[2];
-
-	float3 center = (tverts[0].xyz+ tverts[1].xyz + tverts[2].xyz) / 3.0f;
-
-	modVerts[0].xyz = modVerts[0].xyz + (center -  modVerts[0].xyz) * animationFraction;
-	modVerts[0].projv = mul(modelViewProj, float4(modVerts[0].xyz, 1.0f));
-
-	modVerts[1].xyz = modVerts[1].xyz + (center -  modVerts[1].xyz) * animationFraction;
-	modVerts[1].projv = mul(modelViewProj, float4(modVerts[1].xyz, 1.0f));
-
-	modVerts[2].xyz = modVerts[2].xyz + (center -  modVerts[2].xyz) * animationFraction;
-	modVerts[2].projv = mul(modelViewProj, float4(modVerts[2].xyz, 1.0f));
-
-	emitVertex(modVerts[0]);
-	emitVertex(modVerts[1]);
-	emitVertex(modVerts[2]);
-	return;
-
-	emitVertex(tverts[0]);
-	emitVertex(tverts[1]);
-	emitVertex(tverts[2]);
-	return;
-
-}
-
-TRIANGLE void GeometryMainFaceted(AttribArray<VertexDataOutput> tverts,
 	uniform float4x4 modelViewProj) {
 
-	VertexDataOutput modVerts[3];
-	modVerts[0] = tverts[0];
-	modVerts[1] = tverts[1];
-	modVerts[2] = tverts[2];
-
-	float3 tcolor = (tverts[0].color + tverts[1].color + tverts[2].color) / 3.0f;
-
-	modVerts[0].color = tcolor;
-	modVerts[1].color = tcolor;
-	modVerts[2].color = tcolor;
-
-	emitVertex(modVerts[0]);
-	emitVertex(modVerts[1]);
-	emitVertex(modVerts[2]);
-	return;
-
 	emitVertex(tverts[0]);
 	emitVertex(tverts[1]);
 	emitVertex(tverts[2]);
@@ -139,51 +46,53 @@ TRIANGLE void GeometryMainFaceted(AttribArray<VertexDataOutput> tverts,
 }
 
 
-PixelDataOutput FragmentMainOLD(VertexDataOutput pdi, 
-	uniform float blueHue, uniform float3 center, 
-	uniform float3 eye) {
+PixelDataOutput FragmentMain(VertexDataOutput pdi, 
+	uniform float3 eye, uniform float3 light,
+	uniform float3 tlc, uniform float3 trc, uniform float3 blc) {
+
+
 
   PixelDataOutput ret;
   ret.color = pdi.color;
-  eye = eye / 128.0f;
-  eye = (eye + float3(1.0f, 1.0f, 1.0f))/2.0f;
-  ret.color.rgb = eye;
-//  ret.color.rgb = center;
-//  ret.color.b = ret.color.b + (1.0f - ret.color.b)*blueHue;
   return ret;
-
-}
-
-
-
-
-PixelDataOutput FragmentMain(VertexDataOutput pdi,
-	uniform float3 eye, uniform float3 C0, 
-	uniform float3 C1) {
-
-  PixelDataOutput ret;
 
   float3 materialColor = float3(1.0f, 0.0f, 0.0f);
-  float ka = 0.2f;
-  float3 lightv = normalize(eye-pdi.xyz);
-  float kd = dot(pdi.normal, lightv);
+  float ka = 0.4f;
+  float3 eyev = normalize(eye-pdi.vxyz);
+  float3 normal = normalize(pdi.normal);
+  float3 lightv = normalize(light-pdi.vxyz);
+  float kd = dot(normal, lightv);
   kd = (kd < 0.0f) ? 0.0f : kd;
-  ret.color = materialColor * (ka + (1.0f-ka)*kd);
+  float3 litColor = materialColor*(ka + (1-ka)*kd);
+  ret.color.rgb = litColor;
 
-// eye vector computation and visualization
-//  float3 eyev = normalize(eye-pdi.xyz);
-//  ret.color = (eyev + float3(1.0f, 1.0f, 1.0f))/2.0f;
+//  ret.color.rgb = float3(1.0f, 1.0f, 0.0f);
+//  ret.color.rgb = eye;
+
+//  ret.color.rgb = (pdi.normal + float3(1.0f, 1.0f, 1.0f))/2.0f;
+
+// float3 c0;
+// c0 = float3(-60.8652, 0, -13.9045);
+// float3 c1;
+// c1 = float3(39.5258, 47.25, 48.5653);
+// ret.color.rgb = float3(0.0f, 0.0f, 0.0f);
+// ret.color.r = (pdi.vxyz.x-c0.x)/(c1.x-c0.x);
+// ret.color.g = (pdi.vxyz.y-c0.y)/(c1.y-c0.y);
+// ret.color.b = (pdi.vxyz.z-c0.z)/(c1.z-c0.z);
 
 
-// visualization of normal
-//	ret.color = (pdi.normal + float3(1.0f, 1.0f, 1.0f))/2.0f;
+// pass top left, top right, and bottom left corners of the billboard to fragment shader (tlc, trc, blc) 
+ 
+// compute reflected ray at current pixel (fragment) from pdi.xyz, pdi.normal, and eye
 
-// visualization of (x, y, z)
-//  ret.color.rgb = float3(0.0f, 0.0f, 0.0f);
-//  ret.color.r = (pdi.xyz - C0).x / (C1.x-C0.x);
+// intersect reflected ray with billboard plane
 
-//  ret.color = pdi.color;
-  return ret;
+// if intersection, compute billboard texture coordinates
+
+// lookup billboard texture at intersection texture coordinates
+
+// if not background (i.e. transparent) set color
+ 
+ return ret;
 
 }
-
